@@ -1,6 +1,13 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="loginRules"
+      autocomplete="on"
+      class="login-form"
+      label-position="left"
+    >
 
       <div class="title-container">
         <h3 class="title">Login Form</h3>
@@ -13,15 +20,15 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
           autocomplete="on"
+          name="username"
+          placeholder="Username"
+          tabindex="1"
+          type="text"
         />
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip v-model="capsTooltip" content="Caps lock is On" manual placement="right">
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -31,12 +38,12 @@
             ref="password"
             v-model="loginForm.password"
             :type="passwordType"
-            placeholder="Password"
-            name="password"
-            tabindex="2"
             autocomplete="on"
-            @keyup.native="checkCapslock"
+            name="password"
+            placeholder="Password"
+            tabindex="2"
             @blur="capsTooltip = false"
+            @keyup.native="checkCapslock"
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
@@ -45,7 +52,39 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <!--验证码-->
+      <el-form-item prop="code">
+        <span class="svg-container">
+          <i class="el-icon-edit" />
+        </span>
+        <el-input
+          ref="code"
+          v-model="loginForm.code"
+          autocomplete="on"
+          name="code"
+          placeholder="code"
+          tabindex="1"
+          type="text"
+        >
+          <el-image
+            slot="suffix"
+            ref="captcha"
+            fit="fill"
+            :src="captchaURL"
+            style="cursor: pointer;width: 100px; height: 40px; top: 5px "
+            @click="getCaptcha"
+          />
+        </el-input>
+
+      </el-form-item>
+
+      <el-button
+        :loading="loading"
+        style="width:100%;margin-bottom:30px;"
+        type="primary"
+        @click.native.prevent="handleLogin"
+      >Login
+      </el-button>
 
       <div style="position:relative">
         <div class="tips">
@@ -63,7 +102,7 @@
       </div>
     </el-form>
 
-    <el-dialog title="Or connect with" :visible.sync="showDialog">
+    <el-dialog :visible.sync="showDialog" title="Or connect with">
       Can not be simulated on local, so please combine you own business simulation! ! !
       <br>
       <br>
@@ -76,6 +115,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import SocialSign from './components/SocialSignin'
+import { getCode } from '@/api/qiniu'
 
 export default {
   name: 'Login',
@@ -98,18 +138,21 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '123456',
+        code: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        code: [{ required: true, trigger: 'blur' }]
       },
       passwordType: 'password',
       capsTooltip: false,
       loading: false,
       showDialog: false,
       redirect: undefined,
-      otherQuery: {}
+      otherQuery: {},
+      captchaURL: ''
     }
   },
   watch: {
@@ -133,6 +176,7 @@ export default {
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
+    this.getCaptcha()
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -158,6 +202,7 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
+              console.log('luyou')
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
@@ -177,6 +222,17 @@ export default {
         }
         return acc
       }, {})
+    },
+    getCaptcha() {
+      getCode().then(res => {
+        console.log(res)
+        return 'data:image/gif;base64,' + btoa(
+          new Uint8Array(res.data).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+      }).catch(error => {
+        console.log(error)
+      }).then(data => {
+        this.captchaURL = data
+      })
     }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
@@ -204,8 +260,8 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
-$light_gray:#fff;
+$bg: #283443;
+$light_gray: #fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -248,9 +304,9 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;

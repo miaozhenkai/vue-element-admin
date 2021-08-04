@@ -6,3 +6,11 @@ export function getToken() {
     method: 'get'
   })
 }
+
+export function getCode() {
+  return request({
+    url: '/code', // 假地址 自行替换
+    method: 'get',
+    responseType: 'arraybuffer'
+  })
+}
