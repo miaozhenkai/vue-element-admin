@@ -71,7 +71,6 @@
         <el-form-item label="ipInfo">
           <el-input v-model="temp.ipInfo" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
         </el-form-item>
-
         <el-form-item label="isAllow">
           <el-radio-group v-model="temp.isAllow">
             <el-radio-button :label="true">允许</el-radio-button>
