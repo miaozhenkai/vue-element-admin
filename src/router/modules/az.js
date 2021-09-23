@@ -14,10 +14,10 @@ const azRouter = {
   },
   children: [
     {
-      path: 'ip-table',
-      component: () => import('@/views/table/ip-table'),
-      name: 'IpTable',
-      meta: { title: 'Ip Table' }
+      path: 'ip-allow-table',
+      component: () => import('@/views/table/ip-allow-table'),
+      name: 'IpAllowTable',
+      meta: { title: 'Ip Allow Table' }
     }
   ]
 }
