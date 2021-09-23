@@ -127,7 +127,6 @@ export default {
         isAllow: undefined,
         sort: undefined
       },
-
       allowOptions: [{ label: '允许', key: true }, { label: '禁止', key: false }],
       statusOptions: ['tr', 'draft', 'deleted'],
 
