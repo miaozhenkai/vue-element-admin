@@ -78,7 +78,6 @@
             <el-radio-button :label="false">禁止</el-radio-button>
           </el-radio-group>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
