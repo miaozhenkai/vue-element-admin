@@ -129,7 +129,6 @@ export default {
       },
       allowOptions: [{ label: '允许', key: true }, { label: '禁止', key: false }],
       statusOptions: ['tr', 'draft', 'deleted'],
-
       temp: {
         ipAddress: '',
         ipInfo: '',
