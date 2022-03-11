@@ -42,7 +42,7 @@
       <el-table-column label="isAllow" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.isAllow | statusFilter">
-            {{ row.isAllow === true ? '允许':'禁止' }}
+            {{ row.isAllow === true ? '允许' : '禁止' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { fetchIpAllowList, createIpAllow, updateIpAllowList, deleteIpAllow } from '@/api/ip'
+import { createIpAllow, deleteIpAllow, fetchIpAllowList, updateIpAllowList } from '@/api/ip'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -202,15 +202,25 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          createIpAllow(this.temp).then(() => {
+          createIpAllow(this.temp).then((response) => {
             // this.list.unshift(this.temp)
             this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
+            if (response.code === 200) {
+              this.$notify({
+                title: 'Success',
+                message: 'Created Successfully',
+                type: 'success',
+                duration: 2000
+              })
+            } else if (response.code === 4001) {
+              this.$notify({
+                title: '添加失败',
+                message: response.message,
+                type: 'error',
+                duration: 2000
+              })
+            }
+
             this.getList()
           })
         }
